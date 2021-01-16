@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>vue demo</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./style/style1.css" />
+  </head>
+  <body>
+    <div id="app">
+      <my-header custom-title="通讯录" custom-fixed>
+        <template #left><button @touchstart="backBtn">返回</button></template>
+        <template #right><button @touchstart="homeBtn">主页</button></template>
+      </my-header>
+      <my-list :user-data="userData"></my-list>
+      <my-alert custom-title="呼叫"
+        ><div class="alert_btn">
+          <button>呼叫</button> <button>取消</button>
+        </div></my-alert
+      >
+    </div>
+
+    <script src="./node_modules/vue/dist/vue.js"></script>
+    <script src="./node_modules/vuex/dist/vuex.js"></script>
+    <script>
+      let userData = [
+        {
+          index: "A",
+          users: [
+            { name: "a1", tel: "15082678867" },
+            { name: "a2", tel: "15082678867" },
+            { name: "a3", tel: "15082678867" },
+            { name: "a4", tel: "15082678867" },
+          ],
+        },
+        {
+          index: "B",
+          users: [
+            { name: "b1", tel: "15082678867" },
+            { name: "b2", tel: "15082678867" },
+            { name: "b3", tel: "15082678867" },
+          ],
+        },
+        {
+          index: "C",
+          users: [
+            { name: "c1", tel: "15082678867" },
+            { name: "c2", tel: "15082678867" },
+            { name: "c3", tel: "15082678867" },
+          ],
+        },
+        {
+          index: "D",
+          users: [
+            { name: "d1", tel: "15082678867" },
+            { name: "d2", tel: "15082678867" },
+            { name: "d3", tel: "15082678867" },
+          ],
+        },
+        {
+          index: "E",
+          users: [
+            { name: "e1", tel: "15082678867" },
+            { name: "e2", tel: "15082678867" },
+            { name: "e3", tel: "15082678867" },
+          ],
+        },
+      ];
+      Vue.component("my-header", {
+        template: ` <div id="header" :style="{'position':customFixed?'fixed':'static'}">
+        <slot name="left"></slot>
+        {{customTitle}}
+        <slot name="right"></slot>
+      </div>
+        `,
+        props: {
+          customTitle: {
+            type: String,
+            default: "标题",
+          },
+          customFixed: {
+            type: Boolean,
+            default: false,
+          },
+        },
+      });
+      Vue.component("my-list", {
+        template: `<div id="list">
+       <ul class="list_user" ref='listUser'>
+        <li v-for="item in userData">
+          <p>{{item.index}}</p>
+          <ul>
+            <li @touchstart="showTel(user.tel)" v-for="user in item.users">{{user.name}}</li>
+          </ul>
+        </li>
+       </ul>
+       <ul class="list_index">
+         <li @touchstart="setScroll" v-for="item in userIndex" >{{item}}</li>
+       </ul>
+     </div>
+        `,
+        props: {
+          userData: {
+            type: Array,
+            dafault: function () {
+              return [];
+            },
+          },
+        },
+        computed: {
+          userIndex: function () {
+            return this.filterIndex(this.userData);
+          },
+        },
+        methods: {
+          filterIndex: function (data) {
+            let result = [];
+            data.forEach((item) => {
+              if (item.index) {
+                result.push(item.index);
+              }
+            });
+            return result;
+          },
+          setScroll: function (ev) {
+            let aL = this.$refs.listUser.getElementsByTagName("li"),
+              aP = this.$refs.listUser.getElementsByTagName("p");
+            for (let i = 0; i < aP.length; i++) {
+              if (aP[i].innerHTML == ev.target.innerHTML) {
+                document.documentElement.scrollTop = aP[i].offsetTop;
+              }
+            }
+          },
+          showTel: function (num) {
+            console.log(num);
+          },
+        },
+      });
+      Vue.component("my-alert", {
+        template: `<div id="alert">
+      <div class="alert_content">
+        <div class="alert_title">{{customTitle}}</div>
+        <div class="alert_body">15082678867</div>
+        <slot></slot>
+      </div>
+    </div>
+        `,
+        props: {
+          customTitle: {
+            type: String,
+            default: "标题",
+          },
+        },
+      });
+      const vm = new Vue({
+        el: "#app",
+        data: {
+          userData: userData,
+        },
+        methods: {
+          backBtn: function () {
+            alert("123");
+          },
+          homeBtn: function () {
+            alert("456");
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
