@@ -60,6 +60,7 @@ li {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 667;
+
 }
 #alert .alert_content {
     position: relative;

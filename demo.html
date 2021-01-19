@@ -16,16 +16,15 @@
         <template #right><button @touchstart="homeBtn">主页</button></template>
       </my-header>
       <my-list :user-data="userData"></my-list>
-      <my-alert custom-title="呼叫"
-        ><div class="alert_btn">
-          <button>呼叫</button> <button>取消</button>
-        </div></my-alert
+      <my-alert custom-title="呼叫" 
+        ></my-alert
       >
     </div>
 
     <script src="./node_modules/vue/dist/vue.js"></script>
     <script src="./node_modules/vuex/dist/vuex.js"></script>
     <script>
+      let busVM = new Vue();
       let userData = [
         {
           index: "A",
@@ -71,11 +70,11 @@
       ];
       Vue.component("my-header", {
         template: ` <div id="header" :style="{'position':customFixed?'fixed':'static'}">
-        <slot name="left"></slot>
-        {{customTitle}}
-        <slot name="right"></slot>
-      </div>
-        `,
+          <slot name="left"></slot>
+          {{customTitle}}
+          <slot name="right"></slot>
+        </div>
+          `,
         props: {
           customTitle: {
             type: String,
@@ -89,19 +88,19 @@
       });
       Vue.component("my-list", {
         template: `<div id="list">
-       <ul class="list_user" ref='listUser'>
-        <li v-for="item in userData">
-          <p>{{item.index}}</p>
-          <ul>
-            <li @touchstart="showTel(user.tel)" v-for="user in item.users">{{user.name}}</li>
-          </ul>
-        </li>
-       </ul>
-       <ul class="list_index">
-         <li @touchstart="setScroll" v-for="item in userIndex" >{{item}}</li>
-       </ul>
-     </div>
-        `,
+         <ul class="list_user" ref='listUser' @touchmove="bMove=true">
+          <li v-for="item in userData">
+            <p>{{item.index}}</p>
+            <ul>
+              <li @touchend="showTel(user.tel)" v-for="user in item.users">{{user.name}}</li>
+            </ul>
+          </li>
+         </ul>
+         <ul class="list_index">
+           <li @touchstart="setScroll" v-for="item in userIndex" >{{item}}</li>
+         </ul>
+       </div>
+          `,
         props: {
           userData: {
             type: Array,
@@ -109,6 +108,11 @@
               return [];
             },
           },
+        },
+        data: function () {
+          return {
+            bMove: false,
+          };
         },
         computed: {
           userIndex: function () {
@@ -134,25 +138,53 @@
               }
             }
           },
-          showTel: function (num) {
-            console.log(num);
+          showTel: function (tel) {
+            //加一个开关，在bMove为true时点击就会变成false,开关打开，展示号码
+            if (!this.bMove) {
+              busVM.$emit("changeEvents", tel);
+             
+            } else {
+              this.bMove = false;
+            }
           },
         },
       });
       Vue.component("my-alert", {
-        template: `<div id="alert">
-      <div class="alert_content">
-        <div class="alert_title">{{customTitle}}</div>
-        <div class="alert_body">15082678867</div>
-        <slot></slot>
+        template: `<div id="alert" v-if="ifAlert">
+        <div class="alert_content">
+          <div class="alert_title">{{customTitle}}</div>
+          <div class="alert_body">{{customBody}}</div>
+          <div class="alert_btn">
+          <button @click="cancel">呼叫</button> <button @click="cancel">取消</button>
+        </div>
+        </div>
       </div>
-    </div>
-        `,
+          `,
+        data: function () {
+          return {
+            customBody: "",
+            ifAlert: false
+          };
+        },
         props: {
           customTitle: {
             type: String,
             default: "标题",
           },
+        },
+        methods:{
+          cancel:function(){
+            this.ifAlert=false
+          }
+        },
+        mounted: function () {
+          busVM.$on(
+            "changeEvents",
+            function (tel) {
+              this.ifAlert = true;
+              this.customBody = tel;
+            }.bind(this)
+          );
         },
       });
       const vm = new Vue({
