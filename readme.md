@@ -96,10 +96,11 @@
                  <li @touchstart="setScroll" v-for="item in userIndex" >{{item}}</li>
                </ul>
              </div>
-      
-      
-      ```
-
+       ```
+    
+    
+    ```
+    
       ```js
       //在data里有一个bMove
       data: function () {
@@ -141,3 +142,105 @@
 
     
 
+- ## JS组件模式
+
+  - 弹窗点击时出现，非常适合**动态创建**
+
+  - 步骤
+
+    - 封装一个类`let myAlert=(function(){})()`
+
+      - 这个类里有什么？？——他是要接收参数，创建组件的
+
+      1. 默认参数
+
+      2. 组件的模板 【一个JS对象】
+
+      3. 把模板用`Vue.extend()`生成一个vue构造器
+
+      4. 一个接收参数的**回调**来创建组件
+
+         - 回调里接收参数把默认参数换掉
+
+         - 动态创建vue构造器实例（已经包含模板），把data用参数赋值
+
+         - 最后在HTML页面添加 `document.body.appendChild(vue实例的对应元素)`
+
+           即要用**$el**找到对应元素！
+
+         ```js
+         let myAlert = (function () {
+                 let defaults = {
+                   //默认参数
+                   title: "弹窗",
+                   body: "",
+                   cancelBtn: null,
+                   confirmBtn: null,
+                 };
+                 let alertCom = {
+                   //模板
+                   template: `<div id="alert" >
+                 <div class="alert_content">
+                   <div class="alert_title">{{customTitle}}</div>
+                   <div class="alert_body">{{customBody}}</div>
+                   <div class="alert_btn">
+         			//方法即回调
+                   <button v-if="comfirmBtn" @click="comfirmBtn">呼叫</button>
+                   <button v-if="cancelBtn" @click="cancelBtn">取消</button>
+                 </div>
+                 </div>
+               </div>`,
+                 };
+         
+                 //形成一个Vue构造器——继承
+                 let myComponent = Vue.extend(alertCom);
+                 return function (opts) {
+                   //获得参数
+                   for (attr in opts) {
+                     defaults[attr] = opts[attr];
+                   }
+                   //动态创建
+                   var vm = new myComponent({
+                     el: document.createElement("div"), //template会替代这个el
+                     data: {
+                       customTitle: defaults["title"],
+                       customBody: defaults["body"],
+                       cancelBtn: defaults["cancelBtn"],
+                       comfirmBtn: defaults["confirmBtn"],
+                     },
+                   });
+                   //$el找到这个vue实例对应的元素
+                   document.body.appendChild(vm.$el);
+                 };
+               })();
+         ```
+
+         
+
+    - 在需要创建组件时，调用该函数即可
+
+    - ```js
+      showTel: function (tel) {
+                  //加一个开关，在bMove为true时点击就会变成false,开关打开，展示号码
+                  if (!this.bMove) {
+                    myAlert({
+                        //传参
+                      title: "呼叫",
+                      body: tel,
+                      cancelBtn: function () {
+                          //方法
+                        alert(2);
+                        document.body.removeChild(document.getElementById('alert'));
+                      },
+                      confirmBtn: function () {
+                          //方法
+                        alert(1);
+                      },
+                    });
+                  } else {
+                    this.bMove = false;
+                  }
+                },
+      ```
+
+      

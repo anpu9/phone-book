@@ -16,9 +16,12 @@
         <template #right><button @touchstart="homeBtn">主页</button></template>
       </my-header>
       <my-list :user-data="userData"></my-list>
-      <my-alert custom-title="呼叫" 
-        ></my-alert
-      >
+      <my-alert custom-title="呼叫">
+        <div class="alert_btn">
+          <button @click="confirmBtn">呼叫</button>
+          <button @click="cancelBtn">取消</button>
+        </div>
+        </my-alert>
     </div>
 
     <script src="./node_modules/vue/dist/vue.js"></script>
@@ -142,7 +145,6 @@
             //加一个开关，在bMove为true时点击就会变成false,开关打开，展示号码
             if (!this.bMove) {
               busVM.$emit("changeEvents", tel);
-             
             } else {
               this.bMove = false;
             }
@@ -154,16 +156,14 @@
         <div class="alert_content">
           <div class="alert_title">{{customTitle}}</div>
           <div class="alert_body">{{customBody}}</div>
-          <div class="alert_btn">
-          <button @click="cancel">呼叫</button> <button @click="cancel">取消</button>
-        </div>
+          <slot></slot>
         </div>
       </div>
           `,
         data: function () {
           return {
             customBody: "",
-            ifAlert: false
+            ifAlert: false,
           };
         },
         props: {
@@ -172,11 +172,7 @@
             default: "标题",
           },
         },
-        methods:{
-          cancel:function(){
-            this.ifAlert=false
-          }
-        },
+       
         mounted: function () {
           busVM.$on(
             "changeEvents",
@@ -199,6 +195,13 @@
           homeBtn: function () {
             alert("456");
           },
+          confirmBtn(){
+            alert(78)
+          },
+          cancelBtn(){
+            alert(9)
+            this.$children[2].ifAlert=false
+          }
         },
       });
     </script>
