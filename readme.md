@@ -13,9 +13,25 @@
   - ### 父组件传给子组件用prop/或者自定义传值
 
     - 即把父组件里的data传给子组件
+
     - 在写好的子组件上写v-bind:[prop名]=“父组件里的data名”
-    - ![image-20210118213620979](C:\Users\11027\AppData\Roaming\Typora\typora-user-images\image-20210118213620979.png)
-    - ![image-20210118213655878](C:\Users\11027\AppData\Roaming\Typora\typora-user-images\image-20210118213655878.png)
+
+      ```html
+      <my-list :user-data="userData"></my-list>
+      ```
+
+    - ```js
+      props: {
+                userData: {
+                  type: Array,
+                  dafault: function () {
+                    return [];
+                  },
+                },
+              },
+      ```
+
+      
 
   - ### 子组件传给父组件
 
