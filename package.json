@@ -1,0 +1,23 @@
+{
+  "devDependencies": {
+    "webpack": "^5.18.0"
+  },
+  "name": "vue-phonebook",
+  "description": "- ## 组件的开发",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anpu9/phone-book.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anpu9/phone-book/issues"
+  },
+  "homepage": "https://github.com/anpu9/phone-book#readme"
+}
